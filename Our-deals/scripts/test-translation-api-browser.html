@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Cloud Translate API Key Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      display: none;
+    }
+    
+    .results.show {
+      display: block;
+    }
+    
+    .test-item {
+      padding: 15px;
+      margin-bottom: 15px;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid #e0e0e0;
+    }
+    
+    .test-item.success {
+      border-left-color: #4caf50;
+    }
+    
+    .test-item.error {
+      border-left-color: #f44336;
+    }
+    
+    .test-item.warning {
+      border-left-color: #ff9800;
+    }
+    
+    .test-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    
+    .test-result {
+      color: #666;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    
+    .status-icon {
+      display: inline-block;
+      margin-right: 8px;
+      font-size: 18px;
+    }
+    
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .summary.success {
+      color: #4caf50;
+      background: #e8f5e9;
+    }
+    
+    .summary.error {
+      color: #f44336;
+      background: #ffebee;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .loading.show {
+      display: block;
+    }
+    
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #1565c0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Google Cloud Translate API Key Test</h1>
+    <p class="subtitle">Test your API key to ensure it's working correctly</p>
+    
+    <div class="info-box">
+      <strong>Note:</strong> This test runs in your browser. Your API key is sent directly to Google's API.
+      Make sure you're using a valid API key with the Cloud Translation API enabled.
+    </div>
+    
+    <div class="input-group">
+      <label for="apiKey">API Key:</label>
+      <input 
+        type="password" 
+        id="apiKey" 
+        placeholder="Enter your GOOGLE_CLOUD_TRANSLATE_API_KEY"
+        autocomplete="off"
+      />
+    </div>
+    
+    <button id="testBtn" onclick="runTests()">Run Tests</button>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px; color: #666;">Testing API key...</p>
+    </div>
+    
+    <div class="results" id="results">
+      <h2 style="margin-bottom: 20px; color: #333;">Test Results</h2>
+      <div id="testResults"></div>
+      <div class="summary" id="summary"></div>
+    </div>
+  </div>
+
+  <script>
+    function addTestResult(title, success, message, details = '') {
+      const resultsDiv = document.getElementById('testResults');
+      const testItem = document.createElement('div');
+      testItem.className = `test-item ${success ? 'success' : 'error'}`;
+      
+      const icon = success ? '✅' : '❌';
+      testItem.innerHTML = `
+        <div class="test-title">
+          <span class="status-icon">${icon}</span>
+          ${title}
+        </div>
+        <div class="test-result">${message}</div>
+        ${details ? `<div class="test-result" style="margin-top: 5px; font-family: monospace; font-size: 12px; color: #999;">${details}</div>` : ''}
+      `;
+      
+      resultsDiv.appendChild(testItem);
+    }
+    
+    async function testTranslation(apiKey, text, sourceLang, targetLang) {
+      const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+      
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            q: [text],
+            target: targetLang,
+            source: sourceLang,
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok || data.error) {
+          const errorMsg = data.error?.message || `HTTP ${response.status}`;
+          return {
+            success: false,
+            translated: null,
+            error: errorMsg,
+            details: JSON.stringify(data.error || data, null, 2)
+          };
+        }
+        
+        const translatedText = data.data?.translations?.[0]?.translatedText;
+        
+        return {
+          success: true,
+          translated: translatedText,
+          error: null,
+          details: ''
+        };
+      } catch (error) {
+        return {
+          success: false,
+          translated: null,
+          error: error.message,
+          details: error.stack || ''
+        };
+      }
+    }
+    
+    async function runTests() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const testBtn = document.getElementById('testBtn');
+      const loading = document.getElementById('loading');
+      const results = document.getElementById('results');
+      const testResults = document.getElementById('testResults');
+      const summary = document.getElementById('summary');
+      
+      // Clear previous results
+      testResults.innerHTML = '';
+      summary.innerHTML = '';
+      results.classList.remove('show');
+      
+      if (!apiKey) {
+        alert('Please enter your API key');
+        return;
+      }
+      
+      // Show loading
+      testBtn.disabled = true;
+      loading.classList.add('show');
+      results.classList.add('show');
+      
+      let passedTests = 0;
+      let totalTests = 0;
+      
+      // Test 1: Basic translation
+      totalTests++;
+      addTestResult('Test 1: Basic Translation', false, 'Testing...', '');
+      const test1 = await testTranslation(apiKey, 'Hello, World!', 'en', 'hi');
+      if (test1.success) {
+        addTestResult(
+          'Test 1: Basic Translation',
+          true,
+          `Successfully translated "Hello, World!" to "${test1.translated}"`,
+          `en → hi`
+        );
+        passedTests++;
+      } else {
+        addTestResult(
+          'Test 1: Basic Translation',
+          false,
+          `Failed: ${test1.error}`,
+          test1.details
+        );
+      }
+      
+      // Test 2: Multiple languages
+      const languages = [
+        { text: 'Thank you', source: 'en', target: 'mr', name: 'Marathi' },
+        { text: 'Good morning', source: 'en', target: 'bn', name: 'Bengali' },
+        { text: 'Welcome', source: 'en', target: 'gu', name: 'Gujarati' },
+      ];
+      
+      for (const lang of languages) {
+        totalTests++;
+        addTestResult(`Test ${totalTests}: ${lang.name} Translation`, false, 'Testing...', '');
+        const test = await testTranslation(apiKey, lang.text, lang.source, lang.target);
+        if (test.success) {
+          addTestResult(
+            `Test ${totalTests}: ${lang.name} Translation`,
+            true,
+            `"${lang.text}" → "${test.translated}"`,
+            `${lang.source} → ${lang.target}`
+          );
+          passedTests++;
+        } else {
+          addTestResult(
+            `Test ${totalTests}: ${lang.name} Translation`,
+            false,
+            `Failed: ${test.error}`,
+            test.details
+          );
+        }
+      }
+      
+      // Summary
+      const allPassed = passedTests === totalTests;
+      summary.className = `summary ${allPassed ? 'success' : 'error'}`;
+      summary.textContent = allPassed
+        ? `✅ All tests passed! (${passedTests}/${totalTests})`
+        : `❌ Some tests failed (${passedTests}/${totalTests} passed)`;
+      
+      // Hide loading
+      loading.classList.remove('show');
+      testBtn.disabled = false;
+      
+      // Scroll to results
+      results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    // Allow Enter key to trigger test
+    document.getElementById('apiKey').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        runTests();
+      }
+    });
+    
+    // Try to load API key from localStorage (if previously saved)
+    const savedKey = localStorage.getItem('test_api_key');
+    if (savedKey) {
+      document.getElementById('apiKey').value = savedKey;
+    }
+    
+    // Save API key to localStorage when testing
+    const originalRunTests = runTests;
+    runTests = async function() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      if (apiKey) {
+        localStorage.setItem('test_api_key', apiKey);
+      }
+      return originalRunTests();
+    };
+  </script>
+</body>
+</html>
+
+
+
