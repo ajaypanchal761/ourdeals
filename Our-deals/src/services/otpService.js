@@ -12,14 +12,14 @@ export const sendOTP = async (phone) => {
     console.log('Endpoint:', API_ENDPOINTS.SEND_OTP)
     console.log('Method: POST')
     console.log('Phone:', phone)
-    
+
     const response = await api.post(API_ENDPOINTS.SEND_OTP, {
       phone: phone
     })
-    
+
     console.log('=== sendOTP API Response ===')
     console.log('Response:', response.data)
-    
+
     return response.data
   } catch (error) {
     console.error('=== sendOTP API Error ===')
@@ -31,7 +31,7 @@ export const sendOTP = async (phone) => {
 
 // Verify OTP
 // API: POST /api/verify-otp
-// Request: { phone: "9876543210", otp: "1234" }
+// Request: { phone: "9876543210", otp: "xxxx" }
 // Response: { status: true, message: "OTP verified successfully", data: { user: {...}, token: "...", token_type: "Bearer" } }
 // Auth Required: No
 export const verifyOTP = async (phone, otp) => {
@@ -41,17 +41,17 @@ export const verifyOTP = async (phone, otp) => {
     console.log('Method: POST')
     console.log('Phone:', phone)
     console.log('OTP:', otp)
-    
+
     const requestBody = {
       phone: phone,
       otp: otp
     }
-    
+
     const response = await api.post(API_ENDPOINTS.VERIFY_OTP, requestBody)
-    
+
     console.log('=== verifyOTP API Response ===')
     console.log('Response:', response.data)
-    
+
     return response.data
   } catch (error) {
     console.error('=== verifyOTP API Error ===')
@@ -72,14 +72,14 @@ export const resendOTP = async (phone) => {
     console.log('Endpoint:', API_ENDPOINTS.RESEND_OTP)
     console.log('Method: POST')
     console.log('Phone:', phone)
-    
+
     const response = await api.post(API_ENDPOINTS.RESEND_OTP, {
       phone: phone
     })
-    
+
     console.log('=== resendOTP API Response ===')
     console.log('Response:', response.data)
-    
+
     return response.data
   } catch (error) {
     console.error('=== resendOTP API Error ===')
@@ -100,14 +100,14 @@ export const checkOTPStatus = async (phone) => {
     console.log('Endpoint:', API_ENDPOINTS.CHECK_OTP_STATUS)
     console.log('Method: POST')
     console.log('Phone:', phone)
-    
+
     const response = await api.post(API_ENDPOINTS.CHECK_OTP_STATUS, {
       phone: phone
     })
-    
+
     console.log('=== checkOTPStatus API Response ===')
     console.log('Response:', response.data)
-    
+
     return response.data
   } catch (error) {
     console.error('=== checkOTPStatus API Error ===')

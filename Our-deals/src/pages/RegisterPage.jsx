@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import { userRegister } from '../services/authService'
 import { sendOTP } from '../services/otpService'
 import TranslatedText from '../components/TranslatedText'
@@ -75,6 +76,7 @@ function RegisterPage() {
 
           if (otpResponse.status === true) {
             console.log('✅ OTP sent successfully, navigating to OTP page')
+            toast.success('OTP Sent Successfully!')
             // Navigate to OTP page
             navigate('/otp', {
               state: {
@@ -219,4 +221,3 @@ function RegisterPage() {
 }
 
 export default RegisterPage
-

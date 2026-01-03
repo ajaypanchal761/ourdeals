@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import { verifyOTP, resendOTP, checkOTPStatus } from '../services/otpService'
 import TranslatedText from '../components/TranslatedText'
 import { useTranslation } from '../hooks/useTranslation'
@@ -16,11 +17,23 @@ function OTPPage() {
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [otpTimer, setOtpTimer] = useState(0)
+  const [otpTimer, setOtpTimer] = useState(null)
+  const [resendCooldown, setResendCooldown] = useState(30)
   const [otpStatus, setOtpStatus] = useState(null)
   const [isExpired, setIsExpired] = useState(false)
 
-  // Timer countdown
+  // Resend Cooldown Timer
+  useEffect(() => {
+    let timer
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0))
+      }, 1000)
+    }
+    return () => clearInterval(timer)
+  }, [resendCooldown])
+
+  // OTP Expiration Timer
   useEffect(() => {
     let interval = null
     if (otpTimer > 0) {
@@ -155,6 +168,8 @@ function OTPPage() {
         console.log('✅ OTP verified successfully, redirecting to home')
 
         window.dispatchEvent(new CustomEvent('userLogin'))
+        const successMessage = fromPage === 'register' ? 'Registration Successful!' : 'Login Successful!'
+        toast.success(successMessage)
         navigate('/', { replace: true })
       } else {
         setError(response.message || 'Invalid OTP')
@@ -183,6 +198,8 @@ function OTPPage() {
         console.log('✅ OTP resent successfully')
         setOtp('')
         setIsExpired(false)
+        setResendCooldown(30)
+        toast.success('OTP Resent Successfully!')
 
         // Check OTP status to get actual time from API
         try {
@@ -253,8 +270,8 @@ function OTPPage() {
                 type="text"
                 inputMode="numeric"
                 className={`w-full px-[clamp(12px,3vw,16px)] py-[clamp(10px,2.5vw,12px)] border rounded-lg outline-none text-center text-[clamp(16px,4vw,18px)] font-medium focus:ring-2 focus:ring-[#13335a]/20 transition-all ${isExpired
-                    ? 'border-red-300 bg-red-50'
-                    : 'border-gray-300 focus:border-[#13335a]'
+                  ? 'border-red-300 bg-red-50'
+                  : 'border-gray-300 focus:border-[#13335a]'
                   }`}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
@@ -290,10 +307,10 @@ function OTPPage() {
             <button
               type="button"
               onClick={handleResendOTP}
-              disabled={loading || (otpTimer > 0 && !isExpired)}
+              disabled={loading || resendCooldown > 0}
               className="text-[clamp(12px,3vw,14px)] text-[#13335a] font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              <TranslatedText>Resend OTP</TranslatedText>
+              <TranslatedText>Resend OTP</TranslatedText> {resendCooldown > 0 && <span>({resendCooldown}s)</span>}
             </button>
           </div>
         </form>
@@ -303,4 +320,3 @@ function OTPPage() {
 }
 
 export default OTPPage
-

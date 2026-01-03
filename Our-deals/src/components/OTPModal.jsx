@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import TranslatedText from './TranslatedText'
 
-function OTPModal({ isOpen, onClose, mobileNumber, onBack }) {
+function OTPModal({ isOpen, onClose, mobileNumber, onBack, error, loading, onResend }) {
   const [otp, setOtp] = useState(['', '', '', ''])
   const [resendTimer, setResendTimer] = useState(9)
   const inputRefs = useRef([])
@@ -51,16 +51,18 @@ function OTPModal({ isOpen, onClose, mobileNumber, onBack }) {
   const handleVerify = () => {
     const otpString = otp.join('')
     if (otpString.length === 4) {
-      // Handle OTP verification here
-      console.log('OTP Verified:', otpString)
-      onClose(otpString) // Pass OTP to parent and show name section
+      // Pass OTP to parent for backend verification
+      onClose(otpString)
     }
   }
 
   const handleResend = () => {
     if (resendTimer === 0) {
-      // Handle resend OTP
-      console.log('Resend OTP')
+      // Handle resend OTP via parent prop
+      console.log('OTPModal: Call onResend')
+      if (onResend) {
+        onResend()
+      }
       setOtp(['', '', '', ''])
       setResendTimer(9)
       inputRefs.current[0]?.focus()
@@ -92,19 +94,26 @@ function OTPModal({ isOpen, onClose, mobileNumber, onBack }) {
         </p>
         <p className="text-[clamp(15px,3.5vw,18px)] text-white m-0 mb-[clamp(24px,5vw,40px)] font-semibold">+91 {mobileNumber}</p>
 
+        {error && (
+          <div className="mb-[clamp(16px,3vw,20px)] p-2 bg-red-500/20 border border-red-200/50 rounded-lg text-white text-sm w-full">
+            <TranslatedText>{error}</TranslatedText>
+          </div>
+        )}
+
         <div className="flex gap-[clamp(10px,2.5vw,16px)] justify-center mb-[clamp(20px,4vw,28px)]">
           {otp.map((digit, index) => (
             <div key={index} className="relative">
               <input
                 ref={(el) => (inputRefs.current[index] = el)}
                 type="text"
-                className="w-[clamp(50px,12vw,70px)] h-[clamp(50px,12vw,70px)] border-none rounded-[clamp(10px,2.5vw,14px)] bg-white text-center text-[clamp(20px,5vw,28px)] font-bold text-black outline-none transition-all focus:shadow-[0_0_0_3px_rgba(255,255,255,0.3)] focus:scale-105"
+                className="w-[clamp(50px,12vw,70px)] h-[clamp(50px,12vw,70px)] border-none rounded-[clamp(10px,2.5vw,14px)] bg-white text-center text-[clamp(20px,5vw,28px)] font-bold text-black outline-none transition-all focus:shadow-[0_0_0_3px_rgba(255,255,255,0.3)] focus:scale-105 disabled:opacity-70 disabled:cursor-not-allowed"
                 value={digit}
                 onChange={(e) => handleOtpChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={index === 0 ? handlePaste : undefined}
                 maxLength="1"
                 inputMode="numeric"
+                disabled={loading}
               />
             </div>
           ))}
@@ -116,7 +125,8 @@ function OTPModal({ isOpen, onClose, mobileNumber, onBack }) {
             {resendTimer === 0 && (
               <button
                 onClick={handleResend}
-                className="ml-2 text-white font-semibold underline bg-transparent border-none cursor-pointer hover:text-white/80 transition-colors"
+                disabled={loading}
+                className="ml-2 text-white font-semibold underline bg-transparent border-none cursor-pointer hover:text-white/80 transition-colors disabled:opacity-50"
               >
                 <TranslatedText>Resend</TranslatedText>
               </button>
@@ -127,9 +137,9 @@ function OTPModal({ isOpen, onClose, mobileNumber, onBack }) {
         <button
           className="w-full max-w-[350px] bg-[#E10129] text-white border-none p-[clamp(11px,2.8vw,14px)_clamp(16px,4vw,20px)] rounded-[clamp(10px,2.5vw,14px)] font-bold text-[clamp(14px,3.5vw,16px)] cursor-pointer transition-all hover:bg-[#c00122] hover:scale-[1.02] disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100"
           onClick={handleVerify}
-          disabled={!isOtpComplete}
+          disabled={!isOtpComplete || loading}
         >
-          <TranslatedText>Verify & Continue</TranslatedText>
+          {loading ? <TranslatedText>Verifying...</TranslatedText> : <TranslatedText>Verify & Continue</TranslatedText>}
         </button>
       </div>
     </div>

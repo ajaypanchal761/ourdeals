@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import { userLogin } from '../services/authService'
 import { sendOTP } from '../services/otpService'
 import TranslatedText from '../components/TranslatedText'
@@ -51,6 +52,7 @@ function LoginPage() {
 
           if (otpResponse.status === true) {
             console.log('✅ OTP sent, navigating to OTP page')
+            toast.success('OTP Sent Successfully!')
             navigate('/otp', {
               state: {
                 phone: mobileNumber,

@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react'
 import { TranslationProvider } from './contexts/TranslationContext'
 import Header from './components/Header'
 import BottomNavigation from './components/BottomNavigation'
+import { Toaster } from 'react-hot-toast'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
@@ -68,6 +69,7 @@ function App() {
     <TranslationProvider>
       <Router>
         <AppContent />
+        <Toaster position="top-center" reverseOrder={false} />
       </Router>
     </TranslationProvider>
   )
